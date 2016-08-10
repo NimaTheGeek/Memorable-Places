@@ -17,12 +17,37 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         //setting up user authorization for location use
         manager = CLLocationManager()
         manager.delegate = self
         manager.desiredAccuracy = kCLLocationAccuracyBest
-        manager.requestWhenInUseAuthorization()
-        manager.startUpdatingLocation()
+        
+        //check 
+        if activePlaces == -1{
+            manager.requestWhenInUseAuthorization()
+            manager.startUpdatingLocation()
+            
+        }else{
+            
+            let latitude = NSString(string: places[activePlaces]["lat"]!).doubleValue
+            let longitude = NSString(string: places[activePlaces]["lon"]!).doubleValue
+            let coordinate = CLLocationCoordinate2DMake(latitude, longitude)
+            let latDelta: CLLocationDegrees = 0.01
+            let longDelta: CLLocationDegrees = 0.01
+            let span: MKCoordinateSpan = MKCoordinateSpanMake(latDelta, longDelta)
+            let region: MKCoordinateRegion = MKCoordinateRegionMake(coordinate, span)
+            self.map.setRegion(region, animated: true)
+            //add annotation
+            let annotation = MKPointAnnotation()
+            annotation.coordinate = coordinate
+            annotation.title = places[activePlaces]["name"]
+            //add annotation to the map
+            self.map.addAnnotation(annotation)
+
+        }
+        
+
         
         //setting up long press for adding favourite places
         let uilpgr = UILongPressGestureRecognizer(target: self, action: "action:")
@@ -41,12 +66,27 @@ class ViewController: UIViewController, CLLocationManagerDelegate {
             let touchPoint = gestureRecognizer.locationInView(self.map)
             //convert the points
             let newCoordinate = map.convertPoint(touchPoint, toCoordinateFromView: self.map)
-            //add annotation
-            let annotation = MKPointAnnotation()
-            annotation.coordinate = newCoordinate
-            annotation.title = "new annotation"
-            //add annotation to the map
-            self.map.addAnnotation(annotation)
+            
+            let location = CLLocation(latitude: newCoordinate.latitude, longitude: newCoordinate.longitude)
+            CLGeocoder().reverseGeocodeLocation(location) { (placemarks, error) -> Void in
+                var title = ""
+                
+                if let firstPlacemark = placemarks?.first where error == nil {
+                    
+                    // print(firstPlacemark)
+                    title = "\(firstPlacemark.subThoroughfare!) \(firstPlacemark.thoroughfare!), \(firstPlacemark.subAdministrativeArea!)"
+                    
+                    places.append(["name":title, "lat":"\(newCoordinate.latitude)" , "lon":"\(newCoordinate.longitude)"])
+                    
+                    
+                    //add annotation
+                    let annotation = MKPointAnnotation()
+                    annotation.coordinate = newCoordinate
+                    annotation.title = title
+                    //add annotation to the map
+                    self.map.addAnnotation(annotation)
+                }
+            }
         }
     }
     

@@ -54,6 +54,9 @@
                                     <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="BYZ-38-t0r" kind="show" id="dlo-Rr-ZGd"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -65,7 +68,7 @@
                         <barButtonItem key="backBarButtonItem" title="Back" id="Z9i-f6-hQP"/>
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="CtR-Uh-rpG">
                             <connections>
-                                <segue destination="BYZ-38-t0r" kind="show" id="N0H-Hw-DbL"/>
+                                <segue destination="BYZ-38-t0r" kind="show" identifier="newPlace" id="N0H-Hw-DbL"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -91,4 +94,7 @@
             <point key="canvasLocation" x="30" y="1297"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="N0H-Hw-DbL"/>
+    </inferredMetricsTieBreakers>
 </document>
